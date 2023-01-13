@@ -10,11 +10,6 @@ from ..models.integration_pd import SecretField
 class RPC:
     integration_name = 'kubernetes'
 
-    @web.rpc(f'{integration_name}_created_or_updated')
-    @rpc_tools.wrap_exceptions(RuntimeError)
-    def handle_create_integration(self, integration_data: dict) -> Optional[str]:
-        return None
-
     @web.rpc(f'{integration_name}_process_secrets')
     @rpc_tools.wrap_exceptions(RuntimeError)
     def process_secrets(self, integration_data: dict) -> dict:
