@@ -3,6 +3,7 @@
 {#{% set show_test_connection = True %}#}
 
 {% set default_template = default_template %}
+{% set section_name = section_name | default('reporters') %}
 
 <add-integration-button
     integration_name="{{ integration_name }}"
@@ -15,5 +16,9 @@
         instance_name="{{ integration_name }}"
         @register="register"
         display_name="{{ display_name }}"
+
+        section_name="{{ section_name }}"
+        @update="custom_data.handle_integrations_update"
+        logo_src="{{ url_for('%s.static' | format(integration_name), filename='logo_white.svg') }}"
 ></kubernetes-integration>
 
