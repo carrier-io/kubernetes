@@ -25,7 +25,10 @@ class API(Resource):
             settings.hostname,
             settings.secure_connection
         )
-        capacity = get_cluster_capacity(core_api, settings.namespace)
+        try:
+            capacity = get_cluster_capacity(core_api, settings.namespace)
+        except Exception as e:
+            return str(e), 400
         capacity["cpu"] = floor(capacity["cpu"] / 1000)
         capacity["memory"] = floor(capacity["memory"] / 1024)
         return capacity, 200

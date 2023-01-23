@@ -1,5 +1,5 @@
 from typing import Tuple, Dict
-
+from pylon.core.tools import log
 from kubernetes.client import V1Container, CoreV1Api, V1ResourceQuotaList, Configuration, \
     ApiClient
 
@@ -15,6 +15,7 @@ def _normalize_cpu(cpu: str) -> float:
 
     :raises ValueError: If the provided CPU unit is not recognized.
     """
+    cpu = str(cpu)
     if cpu[-1:].isdigit():
         return float(cpu) * 1000
     if cpu[-1:] == "m":
@@ -38,7 +39,7 @@ def _normalize_memory(memory: str) -> float:
     :return: The normalized memory value in MiB.
     :raises ValueError: If the provided memory unit is not recognized.
     """
-
+    memory = str(memory)
     if memory[-1:].isdigit():
         return float(memory)
     if memory.endswith("Ki"):
@@ -82,6 +83,7 @@ def get_cluster_capacity(v1: CoreV1Api, namespace: str) -> Dict[str, float]:
         cluster_cpu_usage += namespace_cpu_usage
         cluster_pods_usage += namespace_pods_usage
 
+    log.info(f"{cluster_memory_capacity=} {cluster_memory_usage=}")
     cluster_memory_free = cluster_memory_capacity - cluster_memory_usage - 300.0
     cluster_cpu_free = cluster_cpu_capacity - cluster_cpu_usage
     cluster_pods_usage = cluster_pods_capacity - cluster_pods_usage
@@ -174,7 +176,8 @@ def get_max_cluster_capacity(v1: CoreV1Api) -> Tuple[float, float, int]:
     """
     max_capacity = {'cpu': "0m", 'memory': "0Mi", "pods": 0}
     nodes = v1.list_node()
-
+    if not nodes.items:
+        raise ValueError("Can't calculate capacity for auto scaling cluster")
     for node in nodes.items:
         node_capacity = node.status.capacity
         max_capacity['cpu'] = max(_normalize_cpu(max_capacity['cpu']),
