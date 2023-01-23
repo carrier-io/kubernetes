@@ -36,6 +36,58 @@ const KubernetesIntegration = {
                 <div class="invalid-feedback">[[ error.token ]]</div>
                
             </div>
+            <h9>Cluster type</h9>
+            <div class="row">
+                <div class="col-4 pl-0">
+                    <input
+                            id="radioBtn1"
+                            name="radio-group"
+                            class="mx-2 custom-radio"
+                            type="radio"
+                            value="false"
+                            v-model="scaling_cluster"
+                            >
+                    <label
+                            class="mb-0"
+                            for="radioBtn1">
+                        <h9 class="ml-1">
+                        Standard                            
+                        <button
+                            class="btn pl-1"
+                            data-toggle="infotip"
+                            data-placement="right"
+                            title="Cluster doesn't use auto scaling technology.">
+                            <i class="fas fa-gray fa-info-circle"></i>
+                        </button>
+                        </h9>
+                    </label>
+                </div>
+                <div class="col">
+                    <input
+                        id="radioBtn2"
+                        name="radio-group"
+                        checked
+                        class="mx-2 custom-radio"
+                        type="radio"
+                        value="true"
+                        v-model="scaling_cluster"
+                        >
+                    <label
+                        class="mb-0"
+                        for="radioBtn2">
+                        <h9 class="ml-1">
+                        Auto-scaling
+                        <button
+                            class="btn pl-1"
+                            data-toggle="infotip"
+                            data-placement="right"
+                            title="Cluster uses auto scaling technology on cloud level.">
+                            <i class="fas fa-gray fa-info-circle"></i>
+                        </button>
+                        </h9>
+                    </label>
+                </div>
+            </div>
             <div class="form-group w-100-imp">                
             <h9>Namespace</h9>
                 <div class="custom-input">
@@ -51,7 +103,8 @@ const KubernetesIntegration = {
             Get namespaces
             </button>
             </div>
-            <div>
+            <div class="row">
+                <div class="col">
                 <label class="custom-checkbox d-flex align-items-center">
                     <input class="mr-1" type="checkbox"
                             v-model="secure_connection"
@@ -59,7 +112,15 @@ const KubernetesIntegration = {
                     <h9>
                         Secure connection
                     </h9>
+                    <button
+                        class="btn"
+                        data-toggle="infotip"
+                        data-placement="right"
+                        title="Option determines if the server's SSL certificate should be verified for security or not.">
+                        <i class="fas fa-gray fa-info-circle"></i>
+                    </button>
                 </label>
+                </div>
             </div>
         </template>
         <template #footer>
@@ -96,6 +157,7 @@ const KubernetesIntegration = {
                 k8s_token,
                 hostname,
                 secure_connection,
+                scaling_cluster,
                 project_id,
                 namespace,
                 description,
@@ -106,6 +168,7 @@ const KubernetesIntegration = {
                 k8s_token,
                 hostname,
                 secure_connection,
+                scaling_cluster,
                 namespace,
                 project_id,
                 description,
@@ -230,14 +293,12 @@ const KubernetesIntegration = {
 
         initialState: () => ({
             modal_style: {'height': '100px', 'border': ''},
-            k8s_token: {
-                from_secrets: false,
-                value: ''
-            },
+            k8s_token: '',
             namespace: "default",
             namespaces: ["default"],
             hostname: '',
             is_default: false,
+            scaling_cluster: false,
             is_fetching: false,
             secure_connection: false,
             description: '',
