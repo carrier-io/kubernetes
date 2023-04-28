@@ -6,11 +6,15 @@ from ...models.integration_pd import IntegrationModel
 
 
 class API(Resource):
+    url_params = [
+        '<string:mode>',
+        ''
+    ]
 
     def __init__(self, module):
         self.module = module
 
-    def post(self):
+    def post(self, mode):
         try:
             settings = IntegrationModel.parse_obj(request.json)
         except ValidationError as e:

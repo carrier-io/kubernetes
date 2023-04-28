@@ -4,17 +4,21 @@ from flask import request
 from flask_restful import Resource
 from pydantic import ValidationError
 
-from tools import session_project
+from tools import session_project, api_tools
 from ...models.integration_pd import IntegrationModel
 from ...utils import get_core_api, get_cluster_capacity
 
 
 class API(Resource):
+    url_params = [
+        '<string:mode>',
+        ''
+    ]
 
     def __init__(self, module):
         self.module = module
 
-    def post(self):
+    def post(self, mode):
         try:
             settings: IntegrationModel = IntegrationModel.parse_obj(request.json)
         except ValidationError as e:
