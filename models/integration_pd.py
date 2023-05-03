@@ -3,7 +3,6 @@ from math import floor
 from typing import Union
 
 from kubernetes import client
-from kubernetes.client import ApiException, OpenApiException
 from pydantic import BaseModel, root_validator
 from pylon.core.tools import log
 
@@ -50,6 +49,37 @@ class PerformanceBackendTestModel(IntegrationModel):
     cpu_cores_limit: int
     memory_limit: int
     concurrency: int
+    post_processor_cpu_cores_limit: int = 1
+    post_processor_memory_limit: int = 4
+
+    @root_validator
+    def check_capacity(cls, values):
+        if values["scaling_cluster"]:
+            return values
+        token = SecretField.parse_obj(values["k8s_token"])
+        core_api = get_core_api(
+            token.unsecret(session_project.get()),
+            values["hostname"],
+            values["secure_connection"]
+        )
+        capacity = get_cluster_capacity(core_api, values["namespace"])
+        required_cpu = values["cpu_cores_limit"] * values["concurrency"] + values[
+            "post_processor_cpu_cores_limit"]
+        required_memory = values["memory_limit"] * values["concurrency"] + values[
+            "post_processor_memory_limit"]
+
+        available_cpu_cores = floor(capacity["cpu"] / 1000)
+        available_memory = floor(capacity["memory"] / 1024)
+        assert values["concurrency"] <= capacity["pods"], "Not enough runners"
+        msg = f"Not enough capacity. " \
+              f"Test requires {required_cpu} cores and {required_memory}Gb memory"
+        assert (
+                required_cpu <= available_cpu_cores and required_memory <= available_memory), msg
+
+        return values
+
+
+class PerformanceUiTestModel(PerformanceBackendTestModel):
 
     @root_validator
     def check_capacity(cls, values):
@@ -64,6 +94,7 @@ class PerformanceBackendTestModel(IntegrationModel):
         capacity = get_cluster_capacity(core_api, values["namespace"])
         required_cpu = values["cpu_cores_limit"] * values["concurrency"]
         required_memory = values["memory_limit"] * values["concurrency"]
+
         available_cpu_cores = floor(capacity["cpu"] / 1000)
         available_memory = floor(capacity["memory"] / 1024)
         assert values["concurrency"] <= capacity["pods"], "Not enough runners"
@@ -73,7 +104,3 @@ class PerformanceBackendTestModel(IntegrationModel):
                 required_cpu <= available_cpu_cores and required_memory <= available_memory), msg
 
         return values
-
-
-class PerformanceUiTestModel(PerformanceBackendTestModel):
-    ...
