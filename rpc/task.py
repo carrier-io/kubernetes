@@ -3,7 +3,7 @@ from typing import Optional
 from pydantic import ValidationError
 from pylon.core.tools import web
 
-from tools import rpc_tools, secrets_tools
+from tools import rpc_tools, VaultClient
 from ..models.integration_pd import SecretField
 
 
@@ -14,7 +14,8 @@ class RPC:
     @rpc_tools.wrap_exceptions(RuntimeError)
     def process_secrets(self, integration_data: dict) -> dict:
         project_id = integration_data["project_id"]
-        secrets = secrets_tools.get_project_hidden_secrets(project_id)
+        vault_client = VaultClient.from_project(project_id)
+        secrets = vault_client.get_project_hidden_secrets(project_id)
         settings: dict = integration_data["settings"]
 
         for field, value in settings.items():
@@ -28,6 +29,6 @@ class RPC:
             secrets[secret_path] = secret_field.value
             settings[field] = "{{" + f"secret.{secret_path}" + "}}"
 
-        secrets_tools.set_project_hidden_secrets(integration_data["project_id"], secrets)
+        vault_client.set_project_hidden_secrets(integration_data["project_id"], secrets)
 
         return settings
