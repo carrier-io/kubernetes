@@ -1,18 +1,29 @@
 from flask import request
 from flask_restful import Resource
 from pydantic import ValidationError
+from tools import api_tools
 
 from ...models.integration_pd import IntegrationModel
 
 
-class API(Resource):
+class ProjectAPI(api_tools.APIModeHandler):
+    ...
+
+
+class AdminAPI(api_tools.APIModeHandler):
+    ...
+
+
+class API(api_tools.APIBase):
     url_params = [
         '<string:mode>',
         ''
     ]
 
-    def __init__(self, module):
-        self.module = module
+    mode_handlers = {
+        'default': ProjectAPI,
+        'administration': AdminAPI,
+    }
 
     def post(self, mode):
         try:

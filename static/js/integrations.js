@@ -185,7 +185,8 @@ const KubernetesIntegration = {
     },
     methods: {
         async get_namespaces() {
-            const resp = await fetch("/api/v1/kubernetes/get_namespaces",
+            const api_url = V.build_api_url('kubernetes', 'get_namespaces')
+            const resp = await fetch(api_url,
                 {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
@@ -230,7 +231,7 @@ const KubernetesIntegration = {
                 this.is_fetching = false
                 if (response.ok) {
                     this.modal.modal('hide')
-                     this.$emit('update', {...this.$data, section_name: this.section_name})
+                    this.$emit('update', {...this.$data, section_name: this.section_name})
 
                 } else {
                     this.handleError(response)
@@ -260,7 +261,7 @@ const KubernetesIntegration = {
                 this.is_fetching = false
                 if (response.ok) {
                     this.modal.modal('hide')
-                     this.$emit('update', {...this.$data, section_name: this.section_name})
+                    this.$emit('update', {...this.$data, section_name: this.section_name})
 
                 } else {
                     this.handleError(response)
@@ -275,7 +276,7 @@ const KubernetesIntegration = {
                 this.is_fetching = false
 
                 if (response.ok) {
-                     this.$emit('update', {...this.$data, section_name: this.section_name})
+                    this.$emit('update', {...this.$data, section_name: this.section_name})
 
                 } else {
                     this.handleError(response)
