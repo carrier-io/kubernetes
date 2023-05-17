@@ -258,7 +258,7 @@ def get_core_api(token: str, hostname: str, secure_connection: bool = False) -> 
 
     configuration.api_key_prefix['authorization'] = 'Bearer'
     configuration.api_key['authorization'] = token
-    configuration.host = hostname
+    configuration.host = hostname.rstrip('/')
     configuration.verify_ssl = secure_connection
 
     core_api = CoreV1Api(ApiClient(configuration))
