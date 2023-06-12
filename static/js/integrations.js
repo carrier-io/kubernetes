@@ -10,7 +10,8 @@ const KubernetesIntegration = {
         @drop.prevent="modal_style = {'height': '100px', 'border': ''}"
 >
     <ModalDialog
-            v-model:description="description"
+            v-model:name="config.name"
+            v-model:is_shared="config.is_shared"
             v-model:is_default="is_default"
             @update="update"
             @create="create"
@@ -157,7 +158,7 @@ const KubernetesIntegration = {
                 scaling_cluster,
                 project_id,
                 namespace,
-                description,
+                config,
                 is_default,
                 status,
                 mode
@@ -169,7 +170,7 @@ const KubernetesIntegration = {
                 scaling_cluster,
                 namespace,
                 project_id,
-                description,
+                config,
                 is_default,
                 status,
                 mode
@@ -208,9 +209,9 @@ const KubernetesIntegration = {
             this.$nextTick(this.refresh_pickers)
         },
         handleEdit(data) {
-            const {description, is_default, id, settings} = data
+            const {config, is_default, id, settings} = data
             const namespaces = [settings.namespace]
-            this.load({...settings, description, is_default, id, namespaces})
+            this.load({...settings, config, is_default, id, namespaces})
             this.modal.modal('show')
         },
         refresh_pickers() {
@@ -301,7 +302,7 @@ const KubernetesIntegration = {
             scaling_cluster: false,
             is_fetching: false,
             secure_connection: false,
-            description: '',
+            config: {},
             error: {},
             id: null,
             pluginName: 'kubernetes',
