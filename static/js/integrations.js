@@ -221,6 +221,10 @@ const KubernetesIntegration = {
             this.load({id})
             this.delete()
         },
+        handleSetDefault(id, local=true) {
+            this.load({id})
+            this.set_default(local)
+        },
         create() {
             this.is_fetching = true
             fetch(this.api_url + this.pluginName, {
@@ -290,6 +294,27 @@ const KubernetesIntegration = {
                     `)
                 }
             })
+        },
+        async set_default(local) {
+            this.is_fetching = true
+            try {
+                const resp = await fetch(this.api_url + this.project_id + '/' + this.id, {
+                    method: 'PATCH',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({local})
+                })
+                if (resp.ok) {
+                    this.$emit('update', {...this.$data, section_name: this.section_name})
+                } else {
+                    const error_data = await resp.json()
+                    this.handleError(error_data)
+                }
+            } catch (e) {
+                console.error(e)
+                showNotify('ERROR', 'Error setting as default')
+            } finally {
+                this.is_fetching = false
+            }
         },
 
         initialState: () => ({
