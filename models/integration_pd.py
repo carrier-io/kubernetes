@@ -1,6 +1,6 @@
 from json import JSONDecodeError
 from math import floor
-from typing import Union
+from typing import Union, Optional
 
 from kubernetes import client
 from pydantic import BaseModel, root_validator
@@ -46,6 +46,7 @@ class IntegrationModel(BaseModel):
 
 class PerformanceBackendTestModel(IntegrationModel):
     id: int
+    project_id: Optional[int]
     cpu_cores_limit: int
     memory_limit: int
     concurrency: int
