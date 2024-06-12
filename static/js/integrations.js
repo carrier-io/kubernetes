@@ -51,7 +51,7 @@ const KubernetesIntegration = {
                     <label
                             class="mb-0"
                             for="radioBtn1">
-                        <h9 class="ml-1">
+                        <h9 class="ml-1 font-h5">
                         Standard                            
                         <button
                             class="btn pl-1"
@@ -74,7 +74,7 @@ const KubernetesIntegration = {
                         v-model="scaling_cluster"
                         >
                     <label
-                        class="mb-0"
+                        class="mb-0 font-h5"
                         for="radioBtn2">
                         <h9 class="ml-1">
                         Auto-scaling
@@ -89,8 +89,8 @@ const KubernetesIntegration = {
                     </label>
                 </div>
             </div>
-            <div class="form-group w-100-imp">                
-            <h9>Namespace</h9>
+            <div class="form-group w-100-imp mt-2">                
+            <h9 class="font-h5 mb-1">Namespace</h9>
                 <div class="custom-input">
                 <select class="selectpicker bootstrap-select__b" 
                     v-model="namespace"
@@ -98,7 +98,7 @@ const KubernetesIntegration = {
                     <option v-for="item in namespaces">[[ item ]]</option>
                 </select>
                 </div>
-            <button type="button" class="btn btn-secondary btn-sm mr-1 d-inline-block"
+            <button type="button" class="btn btn-secondary btn-sm mr-1 mt-3 d-inline-block"
                 @click="get_namespaces"
             >
             Get namespaces
@@ -110,9 +110,9 @@ const KubernetesIntegration = {
                     <input class="mr-1" type="checkbox"
                             v-model="secure_connection"
                            >
-                    <h9>
+                    <p class="font-h5 font-semibold ml-2">
                         Secure connection
-                    </h9>
+                    </p>
                     <button
                         class="btn"
                         data-toggle="infotip"
