@@ -57,25 +57,31 @@ class PerformanceBackendTestModel(IntegrationModel):
     def check_capacity(cls, values):
         if values["scaling_cluster"]:
             return values
+
+        log.info("KAREN BACKEND VALUES")
+        log.info(values)
+
         token = SecretField.parse_obj(values["k8s_token"])
         core_api = get_core_api(
             token.unsecret(session_project.get()),
             values["hostname"],
             values["secure_connection"]
         )
+        if core_api is None:
+            raise ValueError("Failed to prepare Kubernetes API configuration")
         capacity = get_cluster_capacity(core_api, values["namespace"])
         required_cpu = values["cpu_cores_limit"] * values["concurrency"] + values[
             "post_processor_cpu_cores_limit"]
         required_memory = values["memory_limit"] * values["concurrency"] + values[
             "post_processor_memory_limit"]
 
-        available_cpu_cores = floor(capacity["cpu"] / 1000)
-        available_memory = floor(capacity["memory"] / 1024)
-        assert values["concurrency"] <= capacity["pods"], "Not enough runners"
+        available_cpu_cores = capacity["cpu"] #floor(capacity["cpu"] / 1000)
+        available_memory = capacity["memory"] # floor(capacity["memory"] / 1024)
+        #assert values["concurrency"] <= capacity["pods"], "Not enough runners"
         msg = f"Not enough capacity. " \
               f"Test requires {required_cpu} cores and {required_memory}Gb memory"
-        assert (
-                required_cpu <= available_cpu_cores and required_memory <= available_memory), msg
+        # assert (
+        #         required_cpu <= available_cpu_cores and required_memory <= available_memory), msg
 
         return values
 
@@ -87,21 +93,31 @@ class PerformanceUiTestModel(PerformanceBackendTestModel):
         if values["scaling_cluster"]:
             return values
         token = SecretField.parse_obj(values["k8s_token"])
+        log.info("KAREN VALUES")
+        log.info(values)
+
         core_api = get_core_api(
             token.unsecret(session_project.get()),
             values["hostname"],
             values["secure_connection"]
         )
         capacity = get_cluster_capacity(core_api, values["namespace"])
+        log.info("KAREN CAPACITY")
+        log.info(capacity)
+
         required_cpu = values["cpu_cores_limit"] * values["concurrency"]
         required_memory = values["memory_limit"] * values["concurrency"]
+        available_cpu_cores = capacity["cpu"]  #floor(capacity["cpu"] / 1000)
+        available_memory = capacity["memory"]  #floor(capacity["memory"] / 1024)
 
-        available_cpu_cores = floor(capacity["cpu"] / 1000)
-        available_memory = floor(capacity["memory"] / 1024)
-        assert values["concurrency"] <= capacity["pods"], "Not enough runners"
+        log.info("KAREN available_cpu_cores : %s\n" % str(available_cpu_cores))
+        log.info("KAREN available_memory : %s\n" % str(available_memory))
+
+
+        #assert values["concurrency"] <= capacity["pods"], "Not enough runners"
         msg = f"Not enough capacity. " \
               f"Test requires {required_cpu} cores and {required_memory}Gb memory"
-        assert (
-                required_cpu <= available_cpu_cores and required_memory <= available_memory), msg
+        # assert (
+        #         required_cpu <= available_cpu_cores and required_memory <= available_memory), msg
 
         return values

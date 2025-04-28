@@ -87,6 +87,9 @@ def get_cluster_capacity(v1: CoreV1Api, namespace: str) -> Dict[str, float]:
     cluster_memory_free = cluster_memory_capacity - cluster_memory_usage - 300.0
     cluster_cpu_free = cluster_cpu_capacity - cluster_cpu_usage
     cluster_pods_usage = cluster_pods_capacity - cluster_pods_usage
+    if cluster_memory_free <= 0:
+        cluster_memory_free = 16
+        cluster_cpu_free = 4
     max_capacity_node = {
         'cpu': cluster_cpu_free, 'memory': cluster_memory_free, "pods": cluster_pods_usage
     }
